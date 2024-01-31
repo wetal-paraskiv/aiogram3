@@ -36,7 +36,7 @@ Install requirements from file requirements.txt (pip install -r requirements.txt
 
 /ai        - GPT 3.5 turbo integration
 
-/water      - sets a water reminder
+/water      - sets a water reminder (is active between 09.00 - 20.00)
 /water_stop - delete the water reminder
 /chat_description - change chat description
 %delete100 - delete from chat the last 100 messages but not older the 48 hours

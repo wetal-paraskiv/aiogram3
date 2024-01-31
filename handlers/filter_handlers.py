@@ -47,7 +47,6 @@ async def answer_no(message: Message):
 @router.message(F.text.lower() == "both")
 async def answer_sqlite(message: Message):
     """sqlite answer function"""
-    # print(message.chat.type.capitalize())
     await message.answer(
         "Oh, I like your answer!\n <b><em>There is no bad weather it's only bad clothes</em></b>",
         reply_markup=ReplyKeyboardRemove()

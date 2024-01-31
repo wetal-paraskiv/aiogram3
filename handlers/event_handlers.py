@@ -26,7 +26,7 @@ async def edited_message_handler(message: Message) -> Any:
     await message.reply(text="Edited the message!!!")
 
 
-@router.message(Command("delete100", prefix='%'))
+@router.message(Command("delete100", prefix='/%'))
 async def delete100(message: Message) -> None:
     """function to clear last 100 chat messages"""
     last_id = message.message_id
