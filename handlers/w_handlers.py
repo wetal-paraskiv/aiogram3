@@ -2,41 +2,64 @@ import functools
 
 from aiogram import Router
 from aiogram.filters import Command, CommandObject
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
+from apscheduler.jobstores.base import JobLookupError
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from main import bot
+from keyboards.kb_questions import kb_timer_interval
+from utils.util_functions import is_daytime
 
 router = Router()
 scheduler = AsyncIOScheduler()
 
 
-async def water_message(chat_id) -> None:
+async def timer_message(chat_id, topic) -> None:
     """Scheduler for reminding something..."""
-    print("Reminder: Don't forget about Water...")
-    await bot.send_message(chat_id=chat_id, text='Reminder: don\'t forget about Water...')
+    if is_daytime():
+        await bot.send_message(chat_id=chat_id, text=f"Reminder: ...{topic}...")
 
 
-@router.message(Command("water", ignore_case=True))
-async def schedule_add_job(message: Message, command: CommandObject):
+@router.message(Command("reminder", ignore_case=True))
+async def get_timer_args(message: Message, command: CommandObject):
+    """function to get timer topic and timer interval for reminding something..."""
+    if command.args is None:
+        await message.answer("Please provide reminder topic!")
+        return
+    await message.reply(text="Choose reminder interval", reply_markup=kb_timer_interval(command.args))
+
+
+@router.message(Command("set_timer", ignore_case=True))
+async def scheduler_add_job(message: Message, command: CommandObject):
     """Scheduler for reminding something..."""
-    if command.args is None or not command.args.isdigit():
-        await message.answer("Please provide the periodicity for reminder!")
-        return
-    else:
-        interval = int(command.args)
-        scheduler.add_job(functools.partial(water_message, chat_id=message.chat.id),
-                          'interval',
-                          seconds=interval,
-                          id='water_reminder' + str(message.from_user.id))
-        if scheduler.state == 0:
-            scheduler.start()
-        print("Water message job added to scheduler!")
-        return
+    data = command.args.split(' ')
+    interval = data[0]
+    topic_list = data[1:]
+    topic = ' '.join(topic_list)
+    print(topic)
+    reminder_id = topic + str(message.from_user.id)
+    await message.answer(text="Timer interval: " + interval, reply_markup=ReplyKeyboardRemove())
+    scheduler.add_job(functools.partial(timer_message, chat_id=message.chat.id, topic=topic),
+                      'interval',
+                      minutes=int(interval),
+                      id=reminder_id)
+    if scheduler.state == 0:
+        scheduler.start()
+    print(f"'{topic}' job added to scheduler with interval: {interval}")
+    return
 
 
-@router.message(Command("water_stop", ignore_case=True))
-async def schedule_remove_job(message: Message):
+@router.message(Command("stop", ignore_case=True))
+async def schedule_remove_job(message: Message, command: CommandObject):
     """Scheduler remove job function..."""
-    scheduler.remove_job(job_id='water_reminder' + str(message.from_user.id))
-    print("Scheduler removed the job with id: water_reminder" + str(message.from_user.id))
-    await message.answer("Water reminder was removed!")
+    if command.args is None:
+        await message.answer("To stop reminder please provide topic!")
+        return
+
+    job_id = command.args + str(message.from_user.id)
+    try:
+        scheduler.remove_job(job_id=job_id)
+        print(f"Scheduler removed reminder (id: {job_id})")
+        await message.answer(f"Reminder {command.args} was removed!")
+    except JobLookupError:
+        await message.answer(f"Reminder with topic: {command.args} was not found!")
+    return

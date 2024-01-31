@@ -14,10 +14,11 @@ class BotMessage:
 
 <b>/ai</b>        - <em>GPT 3.5 turbo integration</em>
 
-<b>/water</b>      - <em>sets a water reminder</em>
-<b>/water_stop</b> - <em>delete the water reminder</em>
+<b>/reminder</b>      - <em>set a reminder (/reminder topic)</em>
+<b>/stop</b>       - <em>delete reminder (/stop topic)</em>
+
+<b>/delete100</b> - <em>delete last 100 chat msgs (except older then 48h)</em>
 <b>/chat_description</b> - <em>change chat description</em>
-<b>%delete100</b> - <em>delete from chat the last 100 messages but not older the 48 hours</em>
 """
 
     ADD = "...notesBot added a note..."
