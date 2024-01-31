@@ -1,5 +1,5 @@
 """ AI module """
-
+import logging
 from os import getenv
 import openai
 
@@ -8,6 +8,7 @@ from aiogram.filters import Command
 from main import bot
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 
 class Reference:
@@ -31,6 +32,7 @@ def clear_past():
 @router.message(Command("ai"))
 async def chatgpt(msg: types.Message):
     """A handler to process user's input and generate a response using ChatGPT API"""
+    logger.info("...ai chat GPT3.5 command triggered")
     response = openai.ChatCompletion.create(
         model=MODEL_NAME,
         messages=[

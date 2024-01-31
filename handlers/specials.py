@@ -1,4 +1,5 @@
 from random import randint
+import logging
 
 from aiogram import types, html, F, Bot, Router
 from aiogram.filters import Command, CommandObject
@@ -7,7 +8,7 @@ from aiogram.utils.formatting import Text
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 router = Router()
-
+logger = logging.getLogger(__name__)
 
 @router.message(Command("extract"))
 async def extract_data(message: Message) -> None:
@@ -47,7 +48,7 @@ async def somebody_added(message: Message):
 
 @router.message(F.user_shared)
 async def on_user_shared(message: types.Message):
-    print(
+    logger.info(
         f"Request {message.user_shared.request_id}. "
         f"User ID: {message.user_shared.user_id}"
     )
@@ -55,7 +56,7 @@ async def on_user_shared(message: types.Message):
 
 @router.message(F.chat_shared)
 async def on_chat_shared(message: types.Message):
-    print(
+    logger.info(
         f"Request {message.chat_shared.request_id}. "
         f"User ID: {message.chat_shared.chat_id}"
     )
@@ -63,7 +64,7 @@ async def on_chat_shared(message: types.Message):
 
 @router.message(F.request_contact)
 async def on_request_contact(message: types.Message):
-    print(
+    logger.info(
         f"FullName {message.from_user.full_name}. "
         f"User ID: {message.from_user.get_profile_photos()}"
     )

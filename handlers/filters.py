@@ -1,4 +1,5 @@
 """ Module for different types messages router  """
+import logging
 from datetime import datetime
 
 from aiogram import Router, F
@@ -11,6 +12,7 @@ from aiogram.utils.formatting import (
 from keyboards.kb_questions import kb_yes_no
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 
 @router.message(F.content_type.in_({'sticker', 'photo'}))
@@ -103,4 +105,5 @@ async def cmd_advanced_example(message: Message):
 async def message_with_text(message: Message):
     """function for echo text messages keeping initial formatting"""
     time_now = datetime.now().strftime('%H:%M')
+    logger.info(f"Unknown command on {time_now} or a simple text message: {message.html_text} :)")
     await message.answer(f"Unknown command on {time_now} or a simple text message: {message.html_text} :)")

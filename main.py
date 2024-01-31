@@ -4,6 +4,7 @@
 """
 
 import asyncio
+import logging
 from os import getenv
 
 from dotenv import load_dotenv
@@ -28,6 +29,7 @@ async def main():
     scheduler.start()
     dp.include_routers(_top_router.router)
     Base.metadata.create_all(engine)
+    logger.info("...notesBot activated...scheduler, tables, routers started.")
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(
         bot,
@@ -37,6 +39,8 @@ async def main():
 
 if __name__ == "__main__":
     try:
+        logging.basicConfig(filename='aiogram3.log', encoding='utf-8', level=logging.DEBUG)
+        logger = logging.getLogger(__name__)
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("Nicely shutting down ...")
+        logging.info("...Nicely shutting down ...")

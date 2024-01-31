@@ -1,4 +1,5 @@
 """Module providing postgres database connection & orm methods to support bot commands."""
+import logging
 
 from aiogram import Router
 from aiogram.filters import Command, CommandObject
@@ -12,11 +13,12 @@ from models.note import Note
 from utils.enums import BotMessage
 
 router = Router()
-
+logger = logging.getLogger(__name__)
 
 @router.message(Command("help", ignore_case=True))
 async def help_(message: Message) -> None:
     """/help Function to list available bot commands"""
+    logger.info(" help command")
     await message.answer(text=BotMessage.HELP, parse_mode="HTML")
 
 
@@ -28,12 +30,14 @@ async def add(message: Message, command: CommandObject) -> None:
     with Session(postgres_engine) as session:
         session.add(note)
         session.commit()
+    logger.info("...add command")
     await message.answer(text=BotMessage.ADD)
 
 
 @router.message(Command("list", ignore_case=True))
 async def get_all(message: Message) -> None:
     """Function to list all registered notes"""
+    logger.info("...list command")
     notes = ""
     await message.answer(text=BotMessage.ALL_NOTES)
     session = Session(postgres_engine)
@@ -49,6 +53,7 @@ async def get_all(message: Message) -> None:
 @router.message(Command("del", ignore_case=True))
 async def delete(message: Message, command: CommandObject) -> None:
     """ Function to delete a note."""
+    logger.info("...del command")
     note_id = command.args
     stmt = select(Note).where(Note.id == int(note_id)).where(Note.user_id == str(message.from_user.id))
     with Session(postgres_engine) as session:
@@ -60,12 +65,13 @@ async def delete(message: Message, command: CommandObject) -> None:
         except NoResultFound as e:
             session.rollback()
             await message.answer(text=BotMessage.NO_NOTES_BY_ID + note_id + "... ")
-            print(e)
+            logger.warning(e)
 
 
 @router.message(Command("clear", ignore_case=True, prefix='/'))
 async def delete_all(message: Message, command: CommandObject) -> None:
     """ "Function to delete all notes."""
+    logger.info("cleared all notes, name: " + message.from_user.full_name)
     code = command.args
     if code == "all":
         with Session(postgres_engine) as session:

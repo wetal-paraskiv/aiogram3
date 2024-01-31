@@ -1,3 +1,4 @@
+import logging
 import time
 
 from aiogram import Router, html
@@ -7,23 +8,26 @@ from aiogram.types import Message
 from aiogram.utils.formatting import Text, Bold
 from aiogram.utils.markdown import hbold
 
-from handlers import ai_handler, db_handlers, event_handlers, filter_handlers, special_handlers, w_handlers
+from handlers import ai_gpt, db_crud, events, filters, specials, reminder
 from keyboards.kb_questions import kb_start_question
 
 router = Router()
 router.include_routers(
-    ai_handler.router,
-    db_handlers.router,
-    event_handlers.router,
-    special_handlers.router,
-    w_handlers.router,
-    filter_handlers.router,
+    ai_gpt.router,
+    db_crud.router,
+    events.router,
+    specials.router,
+    reminder.router,
+    filters.router,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @router.message(Command("start", ignore_case=True))
 async def start_(message: Message):
     """/start command function ..."""
+    logger.info("...start command triggered...")
     username = message.from_user.full_name
 
     # # simple answer but with problems if the text contain '<User777>'

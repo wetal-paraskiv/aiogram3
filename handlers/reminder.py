@@ -1,4 +1,5 @@
 import functools
+import logging
 
 from aiogram import Router
 from aiogram.filters import Command, CommandObject
@@ -11,7 +12,7 @@ from utils.util_functions import is_daytime
 
 router = Router()
 scheduler = AsyncIOScheduler()
-
+logger = logging.getLogger(__name__)
 
 async def timer_message(chat_id, topic) -> None:
     """Scheduler for reminding something..."""
@@ -19,7 +20,7 @@ async def timer_message(chat_id, topic) -> None:
         await bot.send_message(chat_id=chat_id, text=f"Reminder: ...{topic}...")
 
 
-@router.message(Command("reminder", ignore_case=True))
+@router.message(Command("remind", ignore_case=True))
 async def get_timer_args(message: Message, command: CommandObject):
     """function to get timer topic and timer interval for reminding something..."""
     if command.args is None:
@@ -31,11 +32,11 @@ async def get_timer_args(message: Message, command: CommandObject):
 @router.message(Command("set_timer", ignore_case=True))
 async def scheduler_add_job(message: Message, command: CommandObject):
     """Scheduler for reminding something..."""
+    logger.info("...set_timer function")
     data = command.args.split(' ')
     interval = data[0]
     topic_list = data[1:]
     topic = ' '.join(topic_list)
-    print(topic)
     reminder_id = topic + str(message.from_user.id)
     await message.answer(text="Timer interval: " + interval, reply_markup=ReplyKeyboardRemove())
     scheduler.add_job(functools.partial(timer_message, chat_id=message.chat.id, topic=topic),
@@ -44,13 +45,14 @@ async def scheduler_add_job(message: Message, command: CommandObject):
                       id=reminder_id)
     if scheduler.state == 0:
         scheduler.start()
-    print(f"'{topic}' job added to scheduler with interval: {interval}")
+    logger.info(f"'{topic}' job added to scheduler with interval: {interval}")
     return
 
 
 @router.message(Command("stop", ignore_case=True))
 async def schedule_remove_job(message: Message, command: CommandObject):
     """Scheduler remove job function..."""
+    logger.info("...stop command...")
     if command.args is None:
         await message.answer("To stop reminder please provide topic!")
         return
@@ -58,7 +60,7 @@ async def schedule_remove_job(message: Message, command: CommandObject):
     job_id = command.args + str(message.from_user.id)
     try:
         scheduler.remove_job(job_id=job_id)
-        print(f"Scheduler removed reminder (id: {job_id})")
+        logging.info(f"Scheduler removed reminder (id: {job_id})")
         await message.answer(f"Reminder {command.args} was removed!")
     except JobLookupError:
         await message.answer(f"Reminder with topic: {command.args} was not found!")

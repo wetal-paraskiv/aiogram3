@@ -14,7 +14,7 @@ class BotMessage:
 
 <b>/ai</b>        - <em>GPT 3.5 turbo integration</em>
 
-<b>/reminder</b>      - <em>set a reminder (/reminder topic)</em>
+<b>/remind</b>  - <em>set a reminder (/reminder topic)</em>
 <b>/stop</b>       - <em>delete reminder (/stop topic)</em>
 
 <b>/delete100</b> - <em>delete last 100 chat msgs (except older then 48h)</em>

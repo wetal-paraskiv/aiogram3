@@ -1,10 +1,12 @@
 """ Module for different events router  """
+import logging
 from typing import Any
 from aiogram import Router
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message, MessageReactionUpdated
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 
 @router.message(Command("chat_description", ignore_case=True))
@@ -17,7 +19,7 @@ async def set_chat_description(message: Message, command: CommandObject) -> None
 @router.message_reaction()
 async def message_reaction_handler(mru: MessageReactionUpdated) -> Any:
     """function which handles message reaction event"""
-    print("Message Reaction!")
+    logger.info("Message Reaction!")
 
 
 @router.edited_message()
@@ -33,5 +35,6 @@ async def delete100(message: Message) -> None:
     result: bool = await message.bot.delete_messages(
         message.chat.id, list(range(last_id - 100, last_id))
     )
-    print("Chat history cleared the last 100 messages but not older then 48 hours... operation succeeded : {0}".format(
-        str(result)))
+    logger.info(
+        "Chat history cleared the last 100 messages but not older then 48 hours... operation succeeded : {0}".format(
+            str(result)))

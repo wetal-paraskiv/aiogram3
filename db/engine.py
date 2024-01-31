@@ -14,6 +14,6 @@ port = getenv("DB_PORT")
 db_name = getenv("DB_NAME")
 
 url = f"postgresql://{user}:{password}@{hostname}:{port}/{db_name}"
-engine = create_engine(url, echo=True)
+engine = create_engine(url, echo=False)
 Base = declarative_base()
 
