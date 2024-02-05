@@ -1,5 +1,6 @@
 from datetime import datetime
 from urllib.request import urlopen
+from lxml.html import parse
 import json
 
 import pytz
@@ -23,3 +24,11 @@ def is_daytime() -> bool:
     evening_datetime_object = datetime.strptime(evening_limit_time, '%H:%M:%S')
 
     return morning_datetime_object.time() <= client_datetime_now.time() <= evening_datetime_object.time()
+
+
+def get_page_title(url):
+    page = urlopen(url)
+    parsed_page = parse(page)
+    full_title = parsed_page.find(".//title").text
+    title = full_title.replace("|", "")
+    return title

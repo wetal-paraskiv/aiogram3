@@ -14,10 +14,11 @@ class BotMessage:
 
 <b>/ai</b>        - <em>GPT 3.5 turbo integration</em>
 
+<b>/mp3</b>       - <em>converts & return a youtube link to audio.mp3</em>
+
 <b>/remind</b>  - <em>set a reminder (/reminder topic)</em>
 <b>/stop</b>       - <em>delete reminder (/stop topic)</em>
 
-<b>/delete100</b> - <em>delete last 100 chat msgs (except older then 48h)</em>
 <b>/chat_description</b> - <em>change chat description</em>
 """
 

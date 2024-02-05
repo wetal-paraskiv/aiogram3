@@ -14,6 +14,7 @@ router = Router()
 scheduler = AsyncIOScheduler()
 logger = logging.getLogger(__name__)
 
+
 async def timer_message(chat_id, topic) -> None:
     """Scheduler for reminding something..."""
     if is_daytime():
