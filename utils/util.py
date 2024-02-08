@@ -1,4 +1,6 @@
 import json
+import logging
+
 import pytz
 import requests
 from datetime import datetime
@@ -8,15 +10,22 @@ from bs4 import BeautifulSoup
 
 
 class Util:
+
     def __init__(self):
         pass
 
+    @property
+    def logger(self):
+        return logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+
     def _get_ip_data(self) -> dict:
+        self.logger.debug("get ip info")
         url = 'http://ipinfo.io/json'
         response = urlopen(url)
         return json.load(response)
 
     def is_daytime(self) -> bool:
+        self.logger.debug("checking time for deactivation during nighttime.")
         ip_data = self._get_ip_data()
         str_client_timezone = ip_data['timezone']
         client_pytz = pytz.timezone(str_client_timezone)
@@ -30,6 +39,7 @@ class Util:
         return morning_datetime_object.time() <= client_datetime_now.time() <= evening_datetime_object.time()
 
     def get_page_title(self, url):
+        self.logger.debug("retrieving page title")
         source = requests.get(url)
         source.encoding = 'utf-8'
         soup = BeautifulSoup(source.text, 'lxml')

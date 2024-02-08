@@ -19,7 +19,7 @@ router.include_routers(
     youtube_.router,
     reminder.router,
     events.router,
-    specials.router,
+    special.router,
     filters.router,
 )
 
