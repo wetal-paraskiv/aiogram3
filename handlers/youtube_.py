@@ -12,9 +12,10 @@ from aiogram.filters import Command, CommandObject
 from pydub import AudioSegment
 
 from main import bot
-from utils.util_functions import get_page_title
+from utils.util import Util
 
 router = Router()
+util = Util()
 
 # YouTube channel URL you want to follow
 CHANNEL_URL = 'https://www.youtube.com/@plushev'
@@ -38,13 +39,13 @@ async def handle_new_chat_member(message: types.Message):
 @router.message(Command("mp3"))
 async def handle_new_channel_post(message: types.Message, command: CommandObject):
     """"Handler for new channel posts"""
-    # Check if the channel post is from the specified channel
-    if message.chat.username == CHANNEL_URL.split('/')[-1]:
-        # Extract the YouTube video ID from the message text
-        video_id = message.text.split('youtube.com/watch?v=')[1].split('&')[0]
-
-        # Download the YouTube video as mp3
-        download_video(video_id)
+    # # Check if the channel post is from the specified channel
+    # if message.chat.username == CHANNEL_URL.split('/')[-1]:
+    #     # Extract the YouTube video ID from the message text
+    #     video_id = message.text.split('youtube.com/watch?v=')[1].split('&')[0]
+    #
+    #     # Download the YouTube video as mp3
+    #     download_video(video_id)
 
     video_id = command.args.split('youtube.com/watch?v=')[1].split('&')[0]
     title = download_video(video_id)
@@ -59,13 +60,13 @@ def download_video(video_id):
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-            'preferredquality': '192',
+            'preferredquality': '190',
         }],
-        'postprocessor_args': [
-            '-compression_level', '8',  # Sets the compression level to maximum
-            '-aq', '1',  # Sets the audio quality to 0 (minimum)
-            '-ac', '2'  # Sets the number of audio channels to 2 (stereo)
-        ],
+        # 'postprocessor_args': [
+        #     '-compression_level', '8',  # Sets the compression level to maximum
+        #     '-aq', '1',  # Sets the audio quality to 0 (minimum)
+        #     '-ac', '2'  # Sets the number of audio channels to 2 (stereo)
+        # ],
         # 'ffmpeg_location': '/usr/local/bin/ffmpeg',  # Path to ffmpeg binary
     }
 
@@ -74,7 +75,7 @@ def download_video(video_id):
 
     # Convert the downloaded audio file to mp3 using pydub
     audio = AudioSegment.from_file(f'{OUTPUT_DIR}/{video_id}.mp3')
-    title = get_page_title(f'https://www.youtube.com/watch?v={video_id}')
+    title = util.get_page_title(f'https://www.youtube.com/watch?v={video_id}')
     audio.export(f'{OUTPUT_DIR}/{title}.mp3', format='mp3', parameters=["-ac", "2", "-ar", "8000"])
 
     # Remove the original audio file
@@ -85,13 +86,12 @@ def download_video(video_id):
 async def post_audio(chat_id, file_url, title):
     await bot.send_audio(chat_id,
                          types.FSInputFile(file_url, "r"),
-                         performer="Performer",
+                         performer=title,
                          title=title)
 
 
-@router.message(Command("post"))
-async def post(message: types.Message, command: CommandObject):
-    await bot.send_audio(message.chat.id,
-                         types.FSInputFile(f"audio_mp3/{command.args}.mp3", "r"),
-                         performer="Performer",
-                         title=command.args)
+@router.message(Command("data"))
+async def handle_get_data(message: types.Message, command: CommandObject):
+    """"Handler for new channel posts"""
+    url = command.args
+    util.get_data(url)

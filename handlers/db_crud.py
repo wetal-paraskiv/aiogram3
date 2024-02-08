@@ -15,6 +15,7 @@ from utils.enums import BotMessage
 router = Router()
 logger = logging.getLogger(__name__)
 
+
 @router.message(Command("help", ignore_case=True))
 async def help_(message: Message) -> None:
     """/help Function to list available bot commands"""

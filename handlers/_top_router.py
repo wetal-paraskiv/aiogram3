@@ -8,10 +8,11 @@ from aiogram.types import Message
 from aiogram.utils.formatting import Text, Bold
 from aiogram.utils.markdown import hbold
 
-from handlers import ai_gpt, db_crud, youtube_, events, specials, reminder, filters
+from handlers import ai_gpt, youtube_, events, special, reminder, filters, db_crud
 from keyboards.kb_questions import kb_start_question
 
 router = Router()
+
 router.include_routers(
     ai_gpt.router,
     db_crud.router,

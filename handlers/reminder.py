@@ -8,16 +8,17 @@ from apscheduler.jobstores.base import JobLookupError
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from main import bot
 from keyboards.kb_questions import kb_timer_interval
-from utils.util_functions import is_daytime
+from utils.util import Util
 
 router = Router()
 scheduler = AsyncIOScheduler()
+util = Util()
 logger = logging.getLogger(__name__)
 
 
 async def timer_message(chat_id, topic) -> None:
     """Scheduler for reminding something..."""
-    if is_daytime():
+    if util.is_daytime():
         await bot.send_message(chat_id=chat_id, text=f"Reminder: ...{topic}...")
 
 
@@ -39,10 +40,11 @@ async def scheduler_add_job(message: Message, command: CommandObject):
     topic_list = data[1:]
     topic = ' '.join(topic_list)
     reminder_id = topic + str(message.from_user.id)
-    await message.answer(text="Timer interval: " + interval, reply_markup=ReplyKeyboardRemove())
+    await message.answer(text=f"{topic.capitalize()} reminder, timer interval: {interval}",
+                         reply_markup=ReplyKeyboardRemove())
     scheduler.add_job(functools.partial(timer_message, chat_id=message.chat.id, topic=topic),
                       'interval',
-                      minutes=int(interval),
+                      seconds=int(interval),
                       id=reminder_id)
     if scheduler.state == 0:
         scheduler.start()
