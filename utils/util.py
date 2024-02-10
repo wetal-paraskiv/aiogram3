@@ -44,7 +44,7 @@ class Util:
         source.encoding = 'utf-8'
         soup = BeautifulSoup(source.text, 'lxml')
         title_tag = soup.html.head.title
-        title = title_tag.get_text()
+        title = title_tag.get_text().replace('"', '').replace('|', '')
         return title
 
     def get_data(self, url):

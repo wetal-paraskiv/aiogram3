@@ -49,7 +49,10 @@ async def handle_new_channel_post(message: types.Message, command: CommandObject
 
     video_id = command.args.split('youtube.com/watch?v=')[1].split('&')[0]
     title = download_video(video_id)
-    await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
+    if title:
+        await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
+    else:
+        await bot.send_message(chat_id=message.chat.id, message="Something went wrong")
 
 
 def download_video(video_id):
@@ -71,16 +74,22 @@ def download_video(video_id):
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([f'https://www.youtube.com/watch?v={video_id}'])
+        try:
+            ydl.cache.remove()
+            ydl.download([f'https://www.youtube.com/watch?v={video_id}'])
+            # Convert the downloaded audio file to mp3 using pydub
+            audio = AudioSegment.from_file(f'{OUTPUT_DIR}/{video_id}.mp3')
+            title = util.get_page_title(f'https://www.youtube.com/watch?v={video_id}')
+            audio.export(f'{OUTPUT_DIR}/{title}.mp3', format='mp3', parameters=["-ac", "2", "-ar", "8000"])
 
-    # Convert the downloaded audio file to mp3 using pydub
-    audio = AudioSegment.from_file(f'{OUTPUT_DIR}/{video_id}.mp3')
-    title = util.get_page_title(f'https://www.youtube.com/watch?v={video_id}')
-    audio.export(f'{OUTPUT_DIR}/{title}.mp3', format='mp3', parameters=["-ac", "2", "-ar", "8000"])
+            # Remove the original audio file
+            os.remove(f'{OUTPUT_DIR}/{video_id}.mp3')
+            return title
 
-    # Remove the original audio file
-    os.remove(f'{OUTPUT_DIR}/{video_id}.mp3')
-    return title
+        except youtube_dl.utils.DownloadError:
+            logger.warning("ERROR: unable to download video data: HTTP Error 403: Forbidden")
+
+    return None
 
 
 async def post_audio(chat_id, file_url, title):

@@ -41,6 +41,7 @@ if __name__ == "__main__":
     try:
         logging.basicConfig(filename='aiogram3.log', encoding='utf-8', level=logging.DEBUG)
         logger = logging.getLogger(__name__)
-        asyncio.run(main())
+        asyncio.get_event_loop().run_until_complete(main())
+        # asyncio.run(main())
     except KeyboardInterrupt:
         logging.info("...Nicely shutting down ...")
