@@ -52,7 +52,7 @@ async def handle_new_channel_post(message: types.Message, command: CommandObject
     if title:
         await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
     else:
-        await bot.send_message(chat_id=message.chat.id, message="Something went wrong")
+        logger.warning("SOMETHING WENT WRONG! mp3 conversion failed...")
 
 
 def download_video(video_id):
