@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 @router.message(Command("help", ignore_case=True))
-async def help_(message: Message) -> None:
+async def help(message: Message) -> None:
     """/help Function to list available bot commands"""
-    logger.info(" help command")
+    logger.info("help command")
     await message.answer(text=BotMessage.HELP, parse_mode="HTML")
 
 

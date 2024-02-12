@@ -14,6 +14,15 @@ def kb_yes_no() -> ReplyKeyboardMarkup:
     return kb.as_markup(resize_keyboard=True)
 
 
+def kb_download_convert(videoId) -> ReplyKeyboardMarkup:
+    """yes, no video download keyboard function"""
+    builder = ReplyKeyboardBuilder()
+    builder.add(types.KeyboardButton(text=f"/ConvertVideo {videoId}", ))
+    builder.add(types.KeyboardButton(text=f"No, thanks."))
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+
 def kb_start_question() -> ReplyKeyboardMarkup:
     """yes, no keyboard function"""
     kb = [
@@ -33,7 +42,7 @@ def kb_start_question() -> ReplyKeyboardMarkup:
 
 
 def kb_timer_interval(topic) -> ReplyKeyboardMarkup:
-    """yes, no keyboard function"""
+    """select time interval keyboard function"""
     builder = ReplyKeyboardBuilder()
     for i in range(30, 181, 30):
         builder.add(types.KeyboardButton(text=f"/set_timer {i} {topic}"))

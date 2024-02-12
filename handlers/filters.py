@@ -46,6 +46,18 @@ async def answer_no(message: Message):
     await message.answer("Sorry...", reply_markup=ReplyKeyboardRemove())
 
 
+@router.message(F.text == "Yes, download & convert.")
+async def answer_yes(message: Message):
+    """yes download & convert answer function"""
+    await message.answer("Nice to hear that!", reply_markup=ReplyKeyboardRemove())
+
+
+@router.message(F.text == "No, thanks.")
+async def answer_no(message: Message):
+    """no answer function"""
+    await message.answer("Ok, no problem :)", reply_markup=ReplyKeyboardRemove())
+
+
 @router.message(F.text.lower() == "both")
 async def answer_sqlite(message: Message):
     """sqlite answer function"""
@@ -71,34 +83,6 @@ async def answer_postgresql(message: Message):
         "Oh, you don't like cold... you like warm weather... :)",
         reply_markup=ReplyKeyboardRemove(),
     )
-
-
-@router.message(Command("advanced_format"))
-async def cmd_advanced_example(message: Message):
-    content = as_list(
-        as_marked_section(
-            Bold("Success:"),
-            "Test 1",
-            "Test 3",
-            "Test 4",
-            marker="✅ ",
-        ),
-        as_marked_section(
-            Bold("Failed:"),
-            "Test 2",
-            marker="❌ ",
-        ),
-        as_marked_section(
-            Bold("Summary:"),
-            as_key_value("Total", 4),
-            as_key_value("Success", 3),
-            as_key_value("Failed", 1),
-            marker="  ",
-        ),
-        HashTag("# Test result"),
-        sep="\n\n",
-    )
-    await message.answer(**content.as_kwargs())
 
 
 @router.message(F.text)
