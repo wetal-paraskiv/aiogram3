@@ -8,6 +8,7 @@ import logging
 import os
 
 import google_auth_oauthlib.flow
+from aiogram.types import ReplyKeyboardRemove
 from googleapiclient.discovery import build
 import googleapiclient.errors
 import youtube_dl
@@ -47,6 +48,8 @@ async def video_mp3_converter_by_youtube_link(message: types.Message, command: C
 async def video_mp3_converter_by_video_id(message: types.Message, command: CommandObject):
     """"Handler for new channel posts"""
     video_id = command.args
+    await message.answer(text=f"Converting video to mp3.",
+                         reply_markup=ReplyKeyboardRemove())
     title = download_video(video_id)
     if title:
         await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
@@ -59,7 +62,8 @@ def ytsearch(message: types.Message, command: CommandObject):
     scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
     api_service_name = "youtube"
     api_version = "v3"
-    client_secrets_file = "E:\client_secret_1070742409421-9am3v3pv2oo8cqo18aa0jsrjcp9p5pue.apps.googleusercontent.com.json"
+    client_secrets_file = ("E:\\client_secret_1070742409421-9am3v3pv2oo8cqo18aa0jsrjcp9p5pue.apps.googleusercontent.com"
+                           ".json")
 
     # Get credentials and create an API client
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
@@ -135,7 +139,7 @@ async def get_recent_by_channel_title(message: types.Message, command: CommandOb
 
     # get client recent yesterday
     # client_datetime_now = utilities.get_client_date_time_now_from_ip_data()
-    # yesterday = (client_datetime_now - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    # yesterday = (client_datetime_now - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     youtube = build('youtube', 'v3', developerKey=api_key)
     request = youtube.search().list(
