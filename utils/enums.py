@@ -5,7 +5,7 @@ class BotMessage:
     """ class Constant for providing typical bot messages. """
     HELP = """
                 -- available commands --:
-<b>/start</b>  - <em>start greeting command</em>
+<b>/start</b>  - <em>greeting command</em>
 <b>/help</b>   - <em>available commands</em>
 <b>/add [note  ]</b>    - <em>adding a note</em>
 <b>/del [noteId]</b>    - <em>delete a note</em>
