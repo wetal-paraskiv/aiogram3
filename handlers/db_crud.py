@@ -1,5 +1,6 @@
 """Module providing postgres database connection & orm methods to support bot commands."""
 import logging
+from pathlib import Path
 
 from aiogram import Router
 from aiogram.filters import Command, CommandObject
@@ -11,15 +12,16 @@ from sqlalchemy.orm import Session
 from db.engine import engine as postgres_engine
 from models.note import Note
 from utils.enums import BotMessage
+from utils.util import logger_decorator
 
 router = Router()
 logger = logging.getLogger(__name__)
 
 
 @router.message(Command("help", ignore_case=True))
+@logger_decorator(Path(__file__).stem + ' HELP')
 async def help(message: Message) -> None:
     """/help Function to list available bot commands"""
-    logger.info("help command")
     await message.answer(text=BotMessage.HELP, parse_mode="HTML")
 
 
@@ -27,12 +29,15 @@ async def help(message: Message) -> None:
 async def add(message: Message, command: CommandObject) -> None:
     """ "Function to add a new note"""
     data = command.args
-    note = Note(data, str(message.from_user.id))
-    with Session(postgres_engine) as session:
-        session.add(note)
-        session.commit()
-    logger.info("...add command")
-    await message.answer(text=BotMessage.ADD)
+    if data:
+        note = Note(data, str(message.from_user.id))
+        with Session(postgres_engine) as session:
+            session.add(note)
+            session.commit()
+        logger.info("...add command")
+        await message.answer(text=BotMessage.ADD)
+        return
+    await message.answer(text=BotMessage.NONE_NOTE)
 
 
 @router.message(Command("list", ignore_case=True))

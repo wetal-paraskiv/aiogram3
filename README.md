@@ -29,14 +29,18 @@ Install requirements from file requirements.txt (pip install -r requirements.txt
                 -- available bot commands --:
 /start  - start greeting command
 /help   - available commands
-/add    - adding a note 
-/del    - deleting a note 
-/list   - list of all notes
-/clear  - delete all notes
+/add [note  ]    - adding a note
+/del [noteId]    - delete a note
+/list     - list of all notes
+/clear - delete all notes [secret code:all]
 
-/ai        - GPT 3.5 turbo integration
+/ai [question]    - GPT 3.5 turbo integration
 
-/water      - sets a water reminder (is active between 09.00 - 20.00)
-/water_stop - delete the water reminder
+/mp3 [youtubeLink]     - converts youtube video link to audio
+/recent [channelTitle] - converts last youtube video of specified channel
+/ytsearch 
+
+/remind [topic]  - set a reminder
+/stop     [topic]  - delete reminder
+
 /chat_description - change chat description
-%delete100 - delete from chat the last 100 messages but not older the 48 hours

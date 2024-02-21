@@ -76,14 +76,18 @@ def ytsearch(message: types.Message, command: CommandObject):
     search_query = command.args
     logger.debug(search_query)
     request = youtube.search().list(
-        maxResults=10,
-        publishedAfter="2024-02-10T00:00:00Z",
+        # maxResults=10,
+        # publishedAfter="2024-02-10T00:00:00Z",
         q=search_query,
-        type="video"
+        type='video',
+        part='snippet',
+        order='date',
     )
     response = request.execute()
 
-    print(response)
+    from pprint import PrettyPrinter
+    pp = PrettyPrinter()
+    pp.pprint(response['items'])
 
 
 def download_video(video_id):
@@ -154,6 +158,4 @@ async def get_recent_by_channel_title(message: types.Message, command: CommandOb
     item = result['items'][0]
     await message.answer(f"{item['snippet']['description']} - {item['id']['videoId']} Choose action: ",
                          reply_markup=kb_download_convert(item['id']['videoId']))
-    # from pprint import PrettyPrinter
-    # pp = PrettyPrinter()
-    # pp.pprint(result['items'])
+

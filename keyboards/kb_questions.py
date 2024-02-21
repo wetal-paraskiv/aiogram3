@@ -14,10 +14,10 @@ def kb_yes_no() -> ReplyKeyboardMarkup:
     return kb.as_markup(resize_keyboard=True)
 
 
-def kb_download_convert(videoId) -> ReplyKeyboardMarkup:
+def kb_download_convert(video_id) -> ReplyKeyboardMarkup:
     """yes, no video download keyboard function"""
     builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(text=f"/ConvertVideo {videoId}", ))
+    builder.add(types.KeyboardButton(text=f"/ConvertVideo {video_id}", ))
     builder.add(types.KeyboardButton(text=f"No, thanks."))
     builder.adjust(2)
     return builder.as_markup(resize_keyboard=True)

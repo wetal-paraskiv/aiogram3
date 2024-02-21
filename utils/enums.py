@@ -16,6 +16,7 @@ class BotMessage:
 
 <b>/mp3 [youtubeLink]</b>     - <em>converts youtube video link to audio</em>
 <b>/recent [channelTitle]</b> - <em>returns last youtube video id</em>
+<b>/ytsearch [channelTitle]</b> - <em>returns list of youtube videos id</em>
 
 <b>/remind [topic]</b>  - <em>set a reminder</em>
 <b>/stop     [topic]</b>  - <em>delete reminder</em>
@@ -24,6 +25,7 @@ class BotMessage:
 """
 
     ADD = "...notesBot added a note..."
+    NONE_NOTE = "...there wasn't any note text..."
     DELETE = "...notesBot deleted the note: "
     NO_NOTES_BY_ID = "...there is no note with id: "
     ALL_NOTES = "...notesBot listing all notes..."

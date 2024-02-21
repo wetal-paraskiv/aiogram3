@@ -1,3 +1,4 @@
+import functools
 import json
 import logging
 
@@ -47,3 +48,19 @@ class Util:
         title_tag = soup.html.head.title
         title = title_tag.get_text().replace('"', '').replace('|', '')
         return title
+
+
+logger = logging.getLogger(f"{__name__}")
+
+
+def logger_decorator(file_name):
+    def inner(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            logger.debug(f'{file_name} function was called!')
+            return result
+
+        return wrapper
+
+    return inner

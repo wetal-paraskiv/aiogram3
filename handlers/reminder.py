@@ -44,7 +44,7 @@ async def scheduler_add_job(message: Message, command: CommandObject):
                          reply_markup=ReplyKeyboardRemove())
     scheduler.add_job(functools.partial(timer_message, chat_id=message.chat.id, topic=topic),
                       'interval',
-                      minutes=int(interval),
+                      seconds=int(interval),
                       id=reminder_id)
     if scheduler.state == 0:
         scheduler.start()
