@@ -39,7 +39,8 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        logging.basicConfig(filename='aiogram3.log', encoding='utf-8', level=logging.DEBUG)
+        logging.basicConfig(filename='aiogram3.log', encoding='utf-8', level=logging.DEBUG,
+                            format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s', )
         logger = logging.getLogger(__name__)
         asyncio.get_event_loop().run_until_complete(main())
         # asyncio.run(main())
