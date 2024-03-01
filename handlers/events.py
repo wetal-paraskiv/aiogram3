@@ -19,7 +19,7 @@ async def set_chat_description(message: Message, command: CommandObject) -> None
 @router.message_reaction()
 async def message_reaction_handler(mru: MessageReactionUpdated) -> Any:
     """function which handles message reaction event"""
-    logger.info("Message Reaction!")
+    logger.info(f"Message Reaction! {mru.new_reaction[0].emoji}")
 
 
 @router.edited_message()

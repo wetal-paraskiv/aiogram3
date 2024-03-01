@@ -36,12 +36,16 @@ if not os.path.exists(OUTPUT_DIR):
 @router.message(Command("mp3"))
 async def video_mp3_converter_by_youtube_link(message: types.Message, command: CommandObject):
     """"Handler to download yt video, convert it to mp3 and return audio file to client"""
-    video_id = command.args.split('youtube.com/watch?v=')[1].split('&')[0]
-    title = download_video(video_id)
-    if title:
-        await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
+    if command.args:
+        video_id = command.args.split('youtube.com/watch?v=')[1].split('&')[0]
+        title = download_video(video_id)
+        if title:
+            await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
+        else:
+            logger.warning("SOMETHING WENT WRONG! mp3 conversion failed...")
     else:
-        logger.warning("SOMETHING WENT WRONG! mp3 conversion failed...")
+        logger.debug('No URL provided for mp3 conversion!')
+        await message.answer('No URL provided for mp3 conversion!')
 
 
 @router.message(Command("ConvertVideo"))
@@ -98,7 +102,7 @@ def download_video(video_id):
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-            'preferredquality': '190',
+            'preferredquality': '192',
         }],
         # 'postprocessor_args': [
         #     '-compression_level', '8',  # Sets the compression level to maximum
@@ -158,4 +162,3 @@ async def get_recent_by_channel_title(message: types.Message, command: CommandOb
     item = result['items'][0]
     await message.answer(f"{item['snippet']['description']} - {item['id']['videoId']} Choose action: ",
                          reply_markup=kb_download_convert(item['id']['videoId']))
-

@@ -42,3 +42,18 @@ async def chatgpt(msg: types.Message):
     )
     reference.response = response["choices"][0]["message"]["content"]
     await bot.send_message(chat_id=msg.chat.id, text=f"{reference.response}")
+
+
+@router.message(Command("dict"))
+async def chatgpt_dict(msg: types.Message):
+    """A handler to process user's input and generate a response using ChatGPT API"""
+    logger.info("...dictionary ai chat GPT3.5 command triggered")
+    response = openai.ChatCompletion.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "assistant", "content": reference.response},
+            {"role": "user", "content": f'give me a dictionary explanation of the word {msg.text}'},
+        ],
+    )
+    reference.response = response["choices"][0]["message"]["content"]
+    await bot.send_message(chat_id=msg.chat.id, text=f"{reference.response}")

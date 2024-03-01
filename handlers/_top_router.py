@@ -45,6 +45,6 @@ async def start_(message: Message):
     await message.answer(**content.as_kwargs())
     time.sleep(1)
 
-    await message.reply(
+    await message.answer(
         "Are you a Winter or a Summer person ?", reply_markup=kb_start_question()
     )
