@@ -6,6 +6,7 @@ necessary packages: pip install youtube_dl pydub ffmpeg-python
 """
 import logging
 import os
+import time
 
 import google_auth_oauthlib.flow
 from aiogram.types import ReplyKeyboardRemove
@@ -19,6 +20,7 @@ from datetime import timedelta
 from main import bot
 from utils.util import Util
 from keyboards.kb_questions import kb_download_convert
+from urllib.error import HTTPError
 
 router = Router()
 utilities = Util()
@@ -34,15 +36,22 @@ if not os.path.exists(OUTPUT_DIR):
 
 
 @router.message(Command("mp3"))
-async def video_mp3_converter_by_youtube_link(message: types.Message, command: CommandObject):
+async def video_mp3_converter_from_youtube_link(message: types.Message, command: CommandObject):
     """"Handler to download yt video, convert it to mp3 and return audio file to client"""
     if command.args:
         video_id = command.args.split('youtube.com/watch?v=')[1].split('&')[0]
-        title = download_video(video_id)
-        if title:
-            await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
-        else:
-            logger.warning("SOMETHING WENT WRONG! mp3 conversion failed...")
+        try:
+            title = download_video(video_id)
+            if title:
+                await post_audio(chat_id=message.chat.id, file_url=f'{OUTPUT_DIR}/{title}.mp3', title=title)
+            else:
+                logger.warning("SOMETHING WENT WRONG! mp3 conversion failed...")
+
+        except HTTPError as error:
+            if error.code == 403:
+                await message.answer('Please try again!')
+            else:
+                logger.error(error)
     else:
         logger.debug('No URL provided for mp3 conversion!')
         await message.answer('No URL provided for mp3 conversion!')
@@ -62,7 +71,7 @@ async def video_mp3_converter_by_video_id(message: types.Message, command: Comma
 
 
 @router.message(Command("ytsearch"))
-def ytsearch(message: types.Message, command: CommandObject):
+async def ytsearch(message: types.Message, command: CommandObject):
     scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
     api_service_name = "youtube"
     api_version = "v3"
@@ -80,18 +89,23 @@ def ytsearch(message: types.Message, command: CommandObject):
     search_query = command.args
     logger.debug(search_query)
     request = youtube.search().list(
-        # maxResults=10,
+        maxResults=3,
         # publishedAfter="2024-02-10T00:00:00Z",
         q=search_query,
         type='video',
-        part='snippet',
+        part='id',
+        # part='snippet',
         order='date',
     )
-    response = request.execute()
+    result = request.execute()
 
-    from pprint import PrettyPrinter
-    pp = PrettyPrinter()
-    pp.pprint(response['items'])
+    for item in result['items']:
+        await message.reply(f"https://www.youtube.com/watch?v={item['id']['videoId']}")
+        time.sleep(0.5)
+
+    # from pprint import PrettyPrinter
+    # pp = PrettyPrinter()
+    # pp.pprint(result['items'])
 
 
 def download_video(video_id):
@@ -115,12 +129,18 @@ def download_video(video_id):
         try:
             ydl.cache.remove()
             ydl.download([f'https://www.youtube.com/watch?v={video_id}'])
+            logger.debug(f'downloaded file {video_id}')
 
             # Convert the downloaded audio file to mp3 using pydub
             audio = AudioSegment.from_file(f'{OUTPUT_DIR}/{video_id}.mp3')
-            title = utilities.get_page_title(f'https://www.youtube.com/watch?v={video_id}')
-            audio.export(f'{OUTPUT_DIR}/{title}.mp3', format='mp3', parameters=["-ac", "2", "-ar", "8000"])
-
+            logger.debug(f'converted file {video_id}')
+            title = utilities.get_page_title(f'https://www.youtube.com/watch?v={video_id}') if True else 'Title'
+            logger.debug(f'got title: {title}')
+            try:
+                audio.export(f'{OUTPUT_DIR}/{title}.mp3', format='mp3', parameters=["-ac", "2", "-ar", "8000"])
+            except os.error as err:
+                logger.error(f'Title format not supported by os!\n{err.strerror}')
+                title = None
             # Remove the original audio file
             os.remove(f'{OUTPUT_DIR}/{video_id}.mp3')
             return title
@@ -133,10 +153,13 @@ def download_video(video_id):
 
 async def post_audio(chat_id, file_url, title):
     """"Handler to post audio from local machine"""
-    await bot.send_audio(chat_id,
-                         types.FSInputFile(file_url, "r"),
-                         performer=title,
-                         title=title)
+    try:
+        await bot.send_audio(chat_id,
+                             types.FSInputFile(file_url, "r"),
+                             performer=title,
+                             title=title)
+    except FileNotFoundError as err:
+        logger.warning(f'File not found exception!\n{err}')
 
 
 @router.message(Command("recent"))

@@ -46,7 +46,9 @@ class Util:
         source.encoding = 'utf-8'
         soup = BeautifulSoup(source.text, 'lxml')
         title_tag = soup.html.head.title
-        title = title_tag.get_text().replace('"', '').replace('|', '')
+        title = (title_tag.get_text()
+                 .replace('"', '').replace('|', '').replace('/', '').replace('?', '').replace('«', '')
+                 .replace('»', '').replace('@', '').replace(':', ' ').replace('*', ''))
         return title
 
 
