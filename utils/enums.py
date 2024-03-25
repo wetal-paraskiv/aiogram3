@@ -13,6 +13,7 @@ class BotMessage:
 <b>/clear</b> - <em>delete all notes</em> [secret code:all]
 
 <b>/ai [question]</b>    - <em>GPT 3.5 turbo integration</em>
+<b>/dict [word]</b>    - <em>word meaning by GPT 3.5 turbo</em>
 
 <b>/mp3 [youtubeLink]</b>     - <em>converts youtube video link to audio</em>
 <b>/recent [channelTitle]</b> - <em>returns last youtube video id</em>
